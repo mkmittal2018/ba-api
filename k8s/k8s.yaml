@@ -1,0 +1,74 @@
+---
+
+# Deployment 
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ba-api
+  labels:
+    app: ba-api
+spec:
+  selector:
+    matchLabels:
+      app: ba-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ba-api
+    spec:
+      containers:
+      - name: ba-api
+        image: manoj81k/ba-api:1.0.0
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 3
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 3
+      securityContext:
+        fsGroup: 2000
+        runAsGroup: 3000
+        runAsUser: 1000
+      terminationGracePeriodSeconds: 30
+
+---
+
+# Service
+kind: Service
+apiVersion: v1
+metadata:
+  name: ba-api
+spec:
+  selector:
+    app: ba-api
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
