@@ -16,7 +16,7 @@
 * Clone the git repository:
 
 ```
-git clone  https://github.com/ba-api.git && cd ba-api
+git clone  https://github.com/ba-api.git &&  cd ba-api
 ```
 
 
